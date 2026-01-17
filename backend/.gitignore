@@ -26,3 +26,4 @@ out/
 .npm
 .eslintcache
 .cache/
+/generated/prisma
