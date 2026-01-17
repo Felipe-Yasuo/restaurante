@@ -27,3 +27,6 @@ out/
 .eslintcache
 .cache/
 /generated/prisma
+
+# Prisma
+generated/
