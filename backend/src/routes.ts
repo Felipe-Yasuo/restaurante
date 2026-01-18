@@ -1,11 +1,15 @@
 import { Router, Request, Response } from 'express';
+
 import { CreateUserController } from './controllers/user/CreateUserController';
-import { validateSchema } from './middlewares/validateSchema';
-import { createUserSchema, authUserSchema } from './schemas/userSchema';
+import { CreateCategoryController } from './controllers/category/CreateCategoryController';
 import { AuthUserController } from './controllers/user/AuthUserController';
 import { DetailUserController } from './controllers/user/DetailUserController';
+
+import { createUserSchema, authUserSchema } from './schemas/userSchema';
+import { validateSchema } from './middlewares/validateSchema';
 import { isAuthenticated } from './middlewares/isAuthenticated';
-import { CreateCategoryController } from './controllers/category/CreateCategoryController';
+import { isAdmin } from './middlewares/isAdmin';
+
 
 const router = Router();
 
@@ -17,7 +21,7 @@ router.get("/me", isAuthenticated, new DetailUserController().handle)
 
 
 // Rotas Category
-router.post("/category", isAuthenticated, new CreateCategoryController().handle)
+router.post("/category", isAuthenticated, isAdmin, new CreateCategoryController().handle)
 
 
 export { router };
