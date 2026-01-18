@@ -12,7 +12,7 @@ class CreateUserController {
             password: password,
         });
 
-        response.json({ message: user });
+        response.json(user);
     }
 }
 
