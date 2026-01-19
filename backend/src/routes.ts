@@ -17,6 +17,7 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
+import { DeleteProductController } from './controllers/product/DeleteProductController';
 
 const router = Router();
 const upload = multer(uploadConfig)
@@ -50,6 +51,14 @@ router.get("/products",
     isAuthenticated,
     validateSchema(listProductSchema),
     new ListProductController().handle);
+
+router.delete(
+    "/product",
+    isAuthenticated,
+    isAdmin,
+    new DeleteProductController().handle
+);
+
 
 export { router };
 
