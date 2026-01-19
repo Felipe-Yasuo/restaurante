@@ -9,6 +9,7 @@ import { createUserSchema, authUserSchema } from './schemas/userSchema';
 import { validateSchema } from './middlewares/validateSchema';
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
+import { createCategorySchema } from './schemas/categorySchema';
 
 
 const router = Router();
@@ -21,7 +22,7 @@ router.get("/me", isAuthenticated, new DetailUserController().handle)
 
 
 // Rotas Category
-router.post("/category", isAuthenticated, isAdmin, new CreateCategoryController().handle)
+router.post("/category", isAuthenticated, isAdmin, validateSchema(createCategorySchema), new CreateCategoryController().handle)
 
 
 export { router };
