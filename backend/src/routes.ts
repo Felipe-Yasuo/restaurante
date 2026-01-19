@@ -15,7 +15,7 @@ import { validateSchema } from './middlewares/validateSchema';
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema } from './schemas/categorySchema';
-
+import { createProductSchema } from './schemas/productSchema';
 
 const router = Router();
 const upload = multer(uploadConfig)
@@ -42,6 +42,7 @@ router.post("/product",
     isAuthenticated,
     isAdmin,
     upload.single('file'),
+    validateSchema(createProductSchema),
     new CreateProductController().handle);
 
 export { router };
