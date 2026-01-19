@@ -5,6 +5,7 @@ import uploadConfig from './config/multer'
 import { CreateUserController } from './controllers/user/CreateUserController';
 import { CreateCategoryController } from './controllers/category/CreateCategoryController';
 import { ListCategoryController } from './controllers/category/ListCategoryController';
+import { ListProductByCategoryController } from './controllers/category/ListProductByCategoryController';
 import { AuthUserController } from './controllers/user/AuthUserController';
 import { DetailUserController } from './controllers/user/DetailUserController';
 import { CreateProductController } from './controllers/product/CreateProductController';
@@ -15,7 +16,7 @@ import { createUserSchema, authUserSchema } from './schemas/userSchema';
 import { validateSchema } from './middlewares/validateSchema';
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
-import { createCategorySchema } from './schemas/categorySchema';
+import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
 
@@ -38,7 +39,6 @@ router.post("/category",
 
 router.get("/category", isAuthenticated, new ListCategoryController().handle);
 
-
 // Rotas Product
 router.post("/product",
     isAuthenticated,
@@ -58,6 +58,12 @@ router.delete(
     isAdmin,
     new DeleteProductController().handle
 );
+
+router.get("/category/product",
+    isAuthenticated,
+    validateSchema(listProductByCategorySchema),
+    new ListProductByCategoryController().handle);
+
 
 
 export { router };
