@@ -10,7 +10,7 @@ import { AuthUserController } from './controllers/user/AuthUserController';
 import { DetailUserController } from './controllers/user/DetailUserController';
 import { CreateProductController } from './controllers/product/CreateProductController';
 import { ListProductController } from './controllers/product/ListProductController';
-
+import { ListOrdersController } from './controllers/order/ListOrdersController';
 
 import { createUserSchema, authUserSchema } from './schemas/userSchema';
 import { validateSchema } from './middlewares/validateSchema';
@@ -18,7 +18,10 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
+import { createOrderSchema } from './schemas/orderSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
+import { CreateOrderController } from './controllers/order/CreateOrderController';
+
 
 const router = Router();
 const upload = multer(uploadConfig)
@@ -63,6 +66,18 @@ router.get("/category/product",
     isAuthenticated,
     validateSchema(listProductByCategorySchema),
     new ListProductByCategoryController().handle);
+
+
+// Rotas Order
+router.post("/order",
+    isAuthenticated,
+    validateSchema(createOrderSchema),
+    new CreateOrderController().handle);
+
+router.get("/orders",
+    isAuthenticated,
+    new ListOrdersController().handle,
+)
 
 
 
