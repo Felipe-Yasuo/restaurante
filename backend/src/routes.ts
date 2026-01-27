@@ -20,13 +20,13 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
-import { addItemSchema, createOrderSchema, detailOrderSchema, finishOrderSchema, removeItemSchema, sendOrderSchema } from './schemas/orderSchema';
+import { addItemSchema, createOrderSchema, detailOrderSchema, finishOrderSchema, removeItemSchema, sendOrderSchema, deleteOrderSchema } from './schemas/orderSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
 import { CreateOrderController } from './controllers/order/CreateOrderController';
 import { AddItemController } from './controllers/order/AddItemController';
 import { SendOrderController } from './controllers/order/SendOrderController';
 import { FinishOrderController } from './controllers/order/FinishOrderController';
-
+import { DeleteOrderController } from './controllers/order/DeleteOrderController';
 
 const router = Router();
 const upload = multer(uploadConfig)
@@ -79,6 +79,13 @@ router.post("/order",
     validateSchema(createOrderSchema),
     new CreateOrderController().handle);
 
+router.delete(
+    "/order",
+    isAuthenticated,
+    validateSchema(deleteOrderSchema),
+    new DeleteOrderController().handle
+)
+
 router.get("/order/detail",
     isAuthenticated,
     validateSchema(detailOrderSchema),
@@ -88,6 +95,7 @@ router.get("/orders",
     isAuthenticated,
     new ListOrdersController().handle
 );
+
 
 
 // Adicionar Item a order
@@ -119,5 +127,8 @@ router.put(
     validateSchema(finishOrderSchema),
     new FinishOrderController().handle
 )
+
+
+
 
 export { router };
