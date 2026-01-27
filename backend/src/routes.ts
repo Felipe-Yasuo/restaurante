@@ -11,6 +11,7 @@ import { DetailUserController } from './controllers/user/DetailUserController';
 import { CreateProductController } from './controllers/product/CreateProductController';
 import { ListProductController } from './controllers/product/ListProductController';
 import { ListOrdersController } from './controllers/order/ListOrdersController';
+import { RemoveItemController } from './controllers/order/RemoveItemController';
 
 import { createUserSchema, authUserSchema } from './schemas/userSchema';
 import { validateSchema } from './middlewares/validateSchema';
@@ -18,7 +19,7 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
-import { addItemSchema, createOrderSchema } from './schemas/orderSchema';
+import { addItemSchema, createOrderSchema, removeItemSchema } from './schemas/orderSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
 import { CreateOrderController } from './controllers/order/CreateOrderController';
 import { AddItemController } from './controllers/order/AddItemController';
@@ -77,14 +78,24 @@ router.post("/order",
 
 router.get("/orders",
     isAuthenticated,
-    new ListOrdersController().handle,
-)
+    new ListOrdersController().handle
+);
 
 
 // Adicionar Item a order
 
-router.post("/order/add", isAuthenticated, validateSchema(addItemSchema), new AddItemController().handle)
+router.post("/order/add",
+    isAuthenticated,
+    validateSchema(addItemSchema),
+    new AddItemController().handle)
+
+// Remover Item da order
+router.delete(
+    "/order/remove",
+    isAuthenticated,
+    validateSchema(removeItemSchema),
+    new RemoveItemController().handle
+);
 
 
 export { router };
-
