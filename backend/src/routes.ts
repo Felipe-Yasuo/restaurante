@@ -18,9 +18,10 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
-import { createOrderSchema } from './schemas/orderSchema';
+import { addItemSchema, createOrderSchema } from './schemas/orderSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
 import { CreateOrderController } from './controllers/order/CreateOrderController';
+import { AddItemController } from './controllers/order/AddItemController';
 
 
 const router = Router();
@@ -79,6 +80,10 @@ router.get("/orders",
     new ListOrdersController().handle,
 )
 
+
+// Adicionar Item a order
+
+router.post("/order/add", isAuthenticated, validateSchema(addItemSchema), new AddItemController().handle)
 
 
 export { router };
