@@ -20,10 +20,11 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import { isAdmin } from './middlewares/isAdmin';
 import { createCategorySchema, listProductByCategorySchema } from './schemas/categorySchema';
 import { createProductSchema, listProductSchema } from './schemas/productSchema';
-import { addItemSchema, createOrderSchema, detailOrderSchema, removeItemSchema } from './schemas/orderSchema';
+import { addItemSchema, createOrderSchema, detailOrderSchema, removeItemSchema, sendOrderSchema } from './schemas/orderSchema';
 import { DeleteProductController } from './controllers/product/DeleteProductController';
 import { CreateOrderController } from './controllers/order/CreateOrderController';
 import { AddItemController } from './controllers/order/AddItemController';
+import { SendOrderController } from './controllers/order/SendOrderController';
 
 
 const router = Router();
@@ -101,6 +102,13 @@ router.delete(
     isAuthenticated,
     validateSchema(removeItemSchema),
     new RemoveItemController().handle
+);
+
+router.put(
+    "/order/send",
+    isAuthenticated,
+    validateSchema(sendOrderSchema),
+    new SendOrderController().handle
 );
 
 

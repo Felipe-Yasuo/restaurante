@@ -43,3 +43,9 @@ export const detailOrderSchema = z.object({
     }),
 });
 
+export const sendOrderSchema = z.object({
+    body: z.object({
+        order_id: z.string({ message: "ID do pedido precisa ser uma string" }),
+        name: z.string({ message: "O nome precisa ser um texto" }),
+    }),
+});
