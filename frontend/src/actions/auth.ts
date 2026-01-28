@@ -1,6 +1,7 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
+import { User } from "@/lib/types";
 
 export async function registerAction(
     prevState: { success: boolean; error: string; redirectTo?: string } | null,
@@ -17,7 +18,7 @@ export async function registerAction(
             password: password,
         };
 
-        await apiClient("/users", {
+        await apiClient<User>("/users", {
             method: "POST",
             body: JSON.stringify(data),
         });
