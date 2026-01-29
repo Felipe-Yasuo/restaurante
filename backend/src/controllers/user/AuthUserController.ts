@@ -9,7 +9,7 @@ class AuthUserController {
 
         const session = await authService.execute({ email, password })
 
-        response.json({ session })
+        response.json(session)
 
     }
 }
