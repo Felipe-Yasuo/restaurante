@@ -1,4 +1,5 @@
 import { requiredAdmin } from "@/lib/auth";
+import { Sidebar } from "@/components/dashboard/sidebar";
 
 export default async function DashboardLayout({
     children,
@@ -6,8 +7,12 @@ export default async function DashboardLayout({
     children: React.ReactNode;
 }) {
     const user = await requiredAdmin();
-    console.log("USER LOGADO ", user);
 
-    return <div>{children}</div>;
+    return (
+        <div className="flex h-screen overflow-hidden text-white">
+            {/* Sidebar DESKTOP*/}
+            <Sidebar userName={user.name} />
+            {children}
+        </div>);
 }
 
