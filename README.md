@@ -68,4 +68,26 @@ Novas funcionalidades estão sendo implementadas conforme avanço no curso e apr
 - Cadastro de produtos
 - Integração com API backend
 
+---
+
+## 📚 Aprendizados até agora
+
+- Estruturação de API REST com Express
+- Autenticação com JWT
+- Hash seguro de senha com Bcrypt
+- Upload de arquivos com Multer
+- Integração com Cloudinary
+- Modelagem de banco com Prisma
+- Separação backend e frontend
+
+---
+
+## 🔮 Roadmap
+
+- Finalização do painel frontend
+- Integração completa frontend ↔ backend
+- Versão mobile com React Native
+- Implementação de testes
+- Deploy da aplicação
+
 
