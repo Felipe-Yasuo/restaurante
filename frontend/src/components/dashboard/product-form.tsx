@@ -23,16 +23,21 @@ import {
 import { createProductAction } from "@/actions/products";
 import { useRouter } from "next/navigation";
 import { Category } from "@/lib/types";
+import Image from "next/image";
+import { Upload } from "lucide-react";
 
 interface ProductFormProps {
     categories: Category[];
 }
 
 export function ProductForm({ categories }: ProductFormProps) {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
+    const [priceValue, setPriceValue] = useState("");
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     async function handleCreateProduct(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -54,6 +59,49 @@ export function ProductForm({ categories }: ProductFormProps) {
             console.log(result.error);
             alert(result.error);
         }
+    }
+
+    function formatToBrl(value: string) {
+        // REMOVER TUDO QUE NÃO é numero
+        const numbers = value.replace(/\D/g, "");
+
+        if (!numbers) return "";
+
+        // Converter para numero e dividir po 100 para ter os centavos
+        const amount = parseInt(numbers) / 100;
+
+        return amount.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        });
+    }
+
+    function handlePriceChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const formatted = formatToBrl(e.target.value);
+        setPriceValue(formatted);
+    }
+
+    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                return;
+            }
+
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function clearImage() {
+        setImageFile(null);
+        setImagePreview(null);
     }
 
     return (
@@ -87,15 +135,16 @@ export function ProductForm({ categories }: ProductFormProps) {
 
                     <div>
                         <Label htmlFor="price" className="mb-2">
-                            Preço (em centavos)
+                            Preço
                         </Label>
                         <Input
                             id="price"
                             name="price"
-                            type="number"
                             required
-                            placeholder="Ex: 3500 para R$ 35,00"
+                            placeholder="Ex: 35,00"
                             className="border-app-border bg-app-background text-white"
+                            value={priceValue}
+                            onChange={handlePriceChange}
                         />
                     </div>
 
@@ -129,7 +178,7 @@ export function ProductForm({ categories }: ProductFormProps) {
                                     <SelectItem
                                         key={category.id}
                                         value={category.id}
-                                        className="text-white hover:bg-app-background focus:bg-app-background cursor-pointer"
+                                        className="text-white hover:bg-transparent cursor-pointer"
                                     >
                                         {category.name}
                                     </SelectItem>
@@ -138,21 +187,43 @@ export function ProductForm({ categories }: ProductFormProps) {
                         </Select>
                     </div>
 
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="file" className="mb-2">
                             Imagem do produto
                         </Label>
-                        <Input
-                            id="file"
-                            name="file"
-                            type="file"
-                            required
-                            accept="image/jpeg,image/jpg,image/png"
-                            className="border-app-border bg-app-background text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-primary file:text-white hover:file:bg-brand-primary/90"
-                        />
-                        <p className="text-xs text-gray-400 mt-1">
-                            Formatos aceitos: JPG, JPEG, PNG (máx. 4MB)
-                        </p>
+                        {imagePreview ? (
+                            <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                                <Image
+                                    src={imagePreview}
+                                    alt="preview da imagem"
+                                    fill
+                                    className="object-cover z-10"
+                                />
+
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={clearImage}
+                                    className="absolute top-2 right-2 z-20"
+                                >
+                                    Excluir
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="border-2 border-dashed rounded-md p-8 flex flex-col items-center justify-center">
+                                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                                <Label htmlFor="file">Clique para selecionar uma imagem</Label>
+                                <Input
+                                    id="file"
+                                    name="file"
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png"
+                                    onChange={handleImageChange}
+                                    required
+                                    className="hidden"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <Button
