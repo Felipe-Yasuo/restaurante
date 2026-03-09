@@ -39,12 +39,42 @@ export function ProductForm({ categories }: ProductFormProps) {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
+    function convertBRLToCents(value: string): number {
+        const cleanValue = value
+            .replace(/[R$\s]/g, "")
+            .replace(/\./g, "")
+            .replace(",", ".");
+
+        const reais = parseFloat(cleanValue) || 0;
+
+        return Math.round(reais * 100);
+    }
+
     async function handleCreateProduct(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsLoading(true);
 
-        const formData = new FormData(e.currentTarget);
+        if (!imageFile) {
+            setIsLoading(false);
+            return;
+        }
+
+        const formData = new FormData();
+
+        const formElement = e.currentTarget;
+
+        const name = (formElement.elements.namedItem("name") as HTMLInputElement)
+            ?.value;
+        const description = (
+            formElement.elements.namedItem("description") as HTMLInputElement
+        )?.value;
+        const priceInCents = convertBRLToCents(priceValue);
+
+        formData.append("name", name);
+        formData.append("description", description);
+        formData.append("price", priceInCents.toString());
         formData.append("category_id", selectedCategory);
+        formData.append("file", imageFile);
 
         const result = await createProductAction(formData);
 
