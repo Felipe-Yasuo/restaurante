@@ -7,6 +7,8 @@ import { Order } from "@/lib/types";
 import { apiClient } from "@/lib/api";
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/format";
+import { EyeIcon } from "lucide-react";
 
 interface OrdersProps {
     token: string;
@@ -24,7 +26,9 @@ export function Orders({ token }: OrdersProps) {
                 token: token,
             });
 
-            setOrders(response);
+            const pendingOrders = response.filter((order) => !order.status);
+
+            setOrders(pendingOrders);
             setLoading(false);
         } catch (err) {
             setLoading(false);
@@ -40,6 +44,14 @@ export function Orders({ token }: OrdersProps) {
         loadOrders();
     }, []);
 
+    const calculateOrderTotal = (order: Order) => {
+        if (!order.items) return 0;
+
+        return order.items.reduce((total, item) => {
+            return total + item.product.price * item.amount;
+        }, 0);
+    };
+
     return (
         <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -50,18 +62,21 @@ export function Orders({ token }: OrdersProps) {
                     </p>
                 </div>
 
-                <Button className="bg-brand-primary text-white hover:bg-brand-primary">
+                <Button
+                    className="bg-brand-primary text-white hover:bg-brand-primary"
+                    onClick={fetchOrders}
+                >
                     <RefreshCcw className="w-5 h-5" />
                 </Button>
             </div>
 
             {loading ? (
                 <div>
-                    <p>Carregando pedidos</p>
+                    <p className="text-center text-gray-300">Carregando pedidos...</p>
                 </div>
             ) : orders.length === 0 ? (
                 <div>
-                    <p>Nenhum pedido encontrado.</p>
+                    <p className="text-center text-gray-300">Nenhum pedido encontrado.</p>
                 </div>
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -95,6 +110,23 @@ export function Orders({ token }: OrdersProps) {
                                             ))}
                                         </div>
                                     )}
+                                </div>
+
+                                <div className="flex flex-col xl:flex-row items-center justify-between pt-4 border-t border-app-border gap-3">
+                                    <div className="self-start">
+                                        <p className="text-sm md:text-base text-gray-400">Total</p>
+                                        <p className="text-base font-bold text-brand-primary">
+                                            {formatPrice(calculateOrderTotal(order))}
+                                        </p>
+                                    </div>
+
+                                    <Button
+                                        size="sm"
+                                        className="bg-brand-primary hover:bg-brand-primary w-full xl:w-auto"
+                                    >
+                                        <EyeIcon className="w-5 h-5" />
+                                        Detalhes
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
