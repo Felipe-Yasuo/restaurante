@@ -9,6 +9,7 @@ import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/format";
 import { EyeIcon } from "lucide-react";
+import { OrderModal } from "@/components/dashboard/ordere-modal";
 
 interface OrdersProps {
     token: string;
@@ -17,6 +18,7 @@ interface OrdersProps {
 export function Orders({ token }: OrdersProps) {
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<Order[]>([]);
+    const [selectedOrder, setSelectedOrder] = useState<null | string>(null);
 
     const fetchOrders = async () => {
         try {
@@ -123,6 +125,7 @@ export function Orders({ token }: OrdersProps) {
                                     <Button
                                         size="sm"
                                         className="bg-brand-primary hover:bg-brand-primary w-full xl:w-auto"
+                                        onClick={() => setSelectedOrder(order.id)}
                                     >
                                         <EyeIcon className="w-5 h-5" />
                                         Detalhes
@@ -133,6 +136,15 @@ export function Orders({ token }: OrdersProps) {
                     ))}
                 </div>
             )}
+
+            <OrderModal
+                orderId={selectedOrder}
+                onClose={async () => {
+                    setSelectedOrder(null);
+                    await fetchOrders();
+                }}
+                token={token}
+            />
         </div>
     );
 }
