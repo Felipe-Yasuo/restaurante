@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { finishOrderAction } from "@/actions/orders";
+import { useRouter } from "next/navigation";
 
 interface OrderModalProps {
     orderId: string | null;
@@ -20,6 +22,7 @@ interface OrderModalProps {
 export function OrderModal({ onClose, orderId, token }: OrderModalProps) {
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const fetchOrder = async () => {
         if (!orderId) {
@@ -64,6 +67,21 @@ export function OrderModal({ onClose, orderId, token }: OrderModalProps) {
         }, 0);
     };
 
+    const handleFinishOrder = async () => {
+        if (!orderId) return;
+
+        const result = await finishOrderAction(orderId);
+
+        if (!result.success) {
+            console.log(result.error);
+        }
+
+        if (result.success) {
+            router.refresh();
+            onClose();
+        }
+    };
+
     return (
         <Dialog open={orderId !== null} onOpenChange={() => onClose()}>
             <DialogContent className="p-6 bg-app-card text-white max-w-2xl">
@@ -80,7 +98,7 @@ export function OrderModal({ onClose, orderId, token }: OrderModalProps) {
                 ) : order ? (
                     <div className="space-y-6">
                         {/* Informações do pedido */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <p className="text-sm text-gray-400 mb-1">Nome da categoria</p>
                                 <p className="text-lg font-semibold">Mesa {order.table}</p>
@@ -93,7 +111,7 @@ export function OrderModal({ onClose, orderId, token }: OrderModalProps) {
                             </div>
                             <div>
                                 <p className="text-sm text-gray-400 mb-1">Status</p>
-                                <span className="inline-block px-3 py-1 bg-orange-500/20 text-orange-500 rounded-full text-sm font-medium">
+                                <span className="inline-block px-3 py-1 bg-orange-500/20 text-orange-500 rounded-full  font-medium text-xs">
                                     Em produção
                                 </span>
                             </div>
@@ -166,6 +184,7 @@ export function OrderModal({ onClose, orderId, token }: OrderModalProps) {
                     <Button
                         className="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white font-semibold"
                         disabled={loading}
+                        onClick={handleFinishOrder}
                     >
                         Finalizar pedido
                     </Button>
