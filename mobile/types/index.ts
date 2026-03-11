@@ -27,6 +27,8 @@ export interface Product {
     description: string;
     category_id: string;
     createdAt: string;
+    banner: string;
+    disabled: boolean;
     category?: Category;
 }
 

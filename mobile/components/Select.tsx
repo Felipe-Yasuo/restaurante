@@ -102,6 +102,7 @@ export function Select({
 const styles = StyleSheet.create({
     container: {
         width: "100%",
+        paddingBottom: 8,
     },
     label: {
         color: colors.primary,

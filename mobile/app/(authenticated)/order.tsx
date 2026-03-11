@@ -1,7 +1,7 @@
 import { Select } from "@/components/Select";
 import { colors, fontSize, spacing } from "@/constants/theme";
 import api from "@/services/api";
-import { Category } from "@/types";
+import { Category, Product } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -26,7 +26,11 @@ export default function Order() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState("");
 
+    const [products, setProducts] = useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState("");
+
     const [loadingCategories, setLoadingCategories] = useState(true);
+    const [loadingProducts, setLoadingProducts] = useState(false);
 
     useEffect(() => {
         async function loadDataCategories() {
@@ -36,15 +40,39 @@ export default function Order() {
         loadDataCategories();
     }, []);
 
+    useEffect(() => {
+        if (selectedCategory) {
+            loadProducts(selectedCategory);
+        } else {
+            setProducts([]);
+            setSelectedCategory("");
+        }
+    }, [selectedCategory]);
+
     async function loadCategories() {
         try {
             const response = await api.get<Category[]>("/category");
-            console.log(response.data);
             setCategories(response.data);
         } catch (err) {
             console.log(err);
         } finally {
             setLoadingCategories(false);
+        }
+    }
+
+    async function loadProducts(categoryId: string) {
+        try {
+            setLoadingProducts(true);
+
+            const response = await api.get<Product[]>("/category/product", {
+                params: { category_id: categoryId },
+            });
+
+            setProducts(response.data);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoadingProducts(false);
         }
     }
 
@@ -79,6 +107,22 @@ export default function Order() {
                     selectedValue={selectedCategory}
                     onValueChange={setSelectedCategory}
                 />
+
+                {loadingProducts ? (
+                    <ActivityIndicator size="small" color={colors.brand} />
+                ) : (
+                    selectedCategory && (
+                        <Select
+                            placeholder="Selecione um produto..."
+                            options={products.map((product) => ({
+                                label: product.name,
+                                value: product.id,
+                            }))}
+                            selectedValue={selectedProduct}
+                            onValueChange={setSelectedProduct}
+                        />
+                    )
+                )}
             </ScrollView>
         </View>
     );
@@ -119,5 +163,6 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: spacing.lg,
+        gap: 14,
     },
 });
