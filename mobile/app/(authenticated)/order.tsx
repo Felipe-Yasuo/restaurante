@@ -1,8 +1,9 @@
 import { Button } from "@/components/Button";
+import { OrderItem } from "@/components/OrderItem";
 import { Select } from "@/components/Select";
 import { colors, fontSize, spacing } from "@/constants/theme";
 import api from "@/services/api";
-import { Category, Product } from "@/types";
+import { Category, Item, Product } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -35,6 +36,9 @@ export default function Order() {
 
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingProducts, setLoadingProducts] = useState(false);
+    const [loadingAddItem, setLoadingAddItem] = useState(false);
+
+    const [items, setItems] = useState<Item[]>([]);
 
     useEffect(() => {
         async function loadDataCategories() {
@@ -77,6 +81,28 @@ export default function Order() {
             console.log(err);
         } finally {
             setLoadingProducts(false);
+        }
+    }
+
+    async function handleAddItem() {
+        try {
+            setLoadingAddItem(true);
+
+            const response = await api.post<Item>("/order/add", {
+                order_id: order_id,
+                product_id: selectedProduct,
+                amount: quantity,
+            });
+
+            setItems([...items, response.data]);
+
+            setSelectedCategory("");
+            setSelectedProduct("");
+            setQuantity(1);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoadingAddItem(false);
         }
     }
 
@@ -147,7 +173,20 @@ export default function Order() {
                 )}
 
                 {selectedProduct && (
-                    <Button title="Adicionar" onPress={() => { }} variant="secondary" />
+                    <Button
+                        title="Adicionar"
+                        onPress={handleAddItem}
+                        variant="secondary"
+                    />
+                )}
+
+                {items.length > 0 && (
+                    <View style={styles.itemsSection}>
+                        <Text style={styles.itemsTitle}>Itens adicionados</Text>
+                        {items.map((item) => (
+                            <OrderItem item={item} key={item.id} onRemove={async () => { }} />
+                        ))}
+                    </View>
                 )}
             </ScrollView>
         </View>
@@ -201,5 +240,14 @@ const styles = StyleSheet.create({
         color: colors.primary,
         fontSize: fontSize.lg,
         fontWeight: "bold",
+    },
+    itemsSection: {
+        marginTop: spacing.xl,
+        gap: spacing.md,
+    },
+    itemsTitle: {
+        color: colors.primary,
+        fontWeight: "bold",
+        fontSize: fontSize.lg,
     },
 });
