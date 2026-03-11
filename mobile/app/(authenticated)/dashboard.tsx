@@ -77,7 +77,7 @@ export default function Dashboard() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={[styles.header, { paddingTop: insets.top + 24 }]}>
-                        <TouchableOpacity style={styles.signoutButton}>
+                        <TouchableOpacity style={styles.signoutButton} onPress={signOut}>
                             <Text style={styles.signoutText}>Sair</Text>
                         </TouchableOpacity>
                     </View>
