@@ -1,7 +1,14 @@
 import { borderRadius, colors, fontSize, spacing } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+    FlatList,
+    Modal,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 
 interface SelectOptions {
     label: string;
@@ -28,11 +35,19 @@ export function Select({
     const selectedOption = options.find((opt) => opt.value === selectedValue);
     const displayText = selectedOption?.label || placeholder;
 
+    function handleChange(value: string) {
+        onValueChange(value);
+        setModalVisible(false);
+    }
+
     return (
         <View style={styles.container}>
             {label && <Text style={styles.label}>{label}</Text>}
 
-            <Pressable style={styles.selectButton} onPress={() => { }}>
+            <Pressable
+                style={styles.selectButton}
+                onPress={() => setModalVisible(true)}
+            >
                 <Text style={styles.selectText}>{displayText}</Text>
                 <Feather name="chevron-down" size={14} color={colors.primary} />
             </Pressable>
@@ -42,7 +57,44 @@ export function Select({
                 transparent
                 animationType="fade"
                 onRequestClose={() => setModalVisible(false)}
-            ></Modal>
+            >
+                <Pressable
+                    style={styles.modalOverlay}
+                    onPress={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>
+                                {label || "Selecione uma opção"}
+                            </Text>
+                            <Pressable onPress={() => setModalVisible(false)}>
+                                <Feather name="x" color={colors.red} size={24} />
+                            </Pressable>
+                        </View>
+
+                        <FlatList
+                            showsVerticalScrollIndicator={false}
+                            data={options}
+                            keyExtractor={(item) => item.value}
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={styles.optionItem}
+                                    onPress={() => handleChange(item.value)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.optionText,
+                                            item.value === selectedValue && styles.optionSelected,
+                                        ]}
+                                    >
+                                        {item.label}
+                                    </Text>
+                                </Pressable>
+                            )}
+                        />
+                    </View>
+                </Pressable>
+            </Modal>
         </View>
     );
 }
@@ -74,5 +126,47 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         color: colors.gray,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0, 0.6)",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: spacing.lg,
+    },
+    modalContent: {
+        backgroundColor: colors.background,
+        width: "100%",
+        maxHeight: "70%",
+        borderWidth: 1,
+        borderColor: colors.borderColor,
+        borderRadius: borderRadius.lg,
+    },
+    modalHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: spacing.md,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.borderColor,
+    },
+    modalTitle: {
+        color: colors.primary,
+        fontSize: fontSize.lg,
+    },
+    optionItem: {
+        padding: spacing.md,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottomColor: colors.borderColor,
+        borderBottomWidth: 1,
+    },
+    optionText: {
+        color: colors.primary,
+    },
+    optionSelected: {
+        color: colors.green,
+        fontWeight: "bold",
     },
 });
