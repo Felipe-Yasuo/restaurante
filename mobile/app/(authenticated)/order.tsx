@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button";
 import { Select } from "@/components/Select";
 import { colors, fontSize, spacing } from "@/constants/theme";
 import api from "@/services/api";
@@ -14,6 +15,7 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { QuantityControl } from "../../components/QuantityControl";
 
 export default function Order() {
     const router = useRouter();
@@ -28,6 +30,8 @@ export default function Order() {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState("");
+
+    const [quantity, setQuantity] = useState(1);
 
     const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingProducts, setLoadingProducts] = useState(false);
@@ -123,6 +127,28 @@ export default function Order() {
                         />
                     )
                 )}
+
+                {selectedProduct && (
+                    <View style={styles.quantitySection}>
+                        <Text style={styles.quantityLabel}>Quantidade</Text>
+                        <QuantityControl
+                            quantity={quantity}
+                            onIncrement={() => setQuantity((quantity) => quantity + 1)}
+                            onDecrement={() => {
+                                if (quantity <= 1) {
+                                    setQuantity(1);
+                                    return;
+                                }
+
+                                setQuantity((quantity) => quantity - 1);
+                            }}
+                        />
+                    </View>
+                )}
+
+                {selectedProduct && (
+                    <Button title="Adicionar" onPress={() => { }} variant="secondary" />
+                )}
             </ScrollView>
         </View>
     );
@@ -164,5 +190,16 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: spacing.lg,
         gap: 14,
+    },
+    quantitySection: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingVertical: spacing.md,
+    },
+    quantityLabel: {
+        color: colors.primary,
+        fontSize: fontSize.lg,
+        fontWeight: "bold",
     },
 });
