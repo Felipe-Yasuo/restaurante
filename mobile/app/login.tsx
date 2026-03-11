@@ -1,4 +1,5 @@
 import { colors, fontSize, spacing } from "@/constants/theme";
+import { useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
@@ -12,6 +13,14 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 
 export default function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    function handleLogin() {
+        console.log({ email, password });
+    }
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -33,6 +42,9 @@ export default function Login() {
                         label="Email"
                         placeholder="Digite seu email..."
                         placeholderTextColor={colors.gray}
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
                     />
 
                     <Input
@@ -40,9 +52,11 @@ export default function Login() {
                         placeholder="Digite sua senha..."
                         placeholderTextColor={colors.gray}
                         secureTextEntry={true}
+                        value={password}
+                        onChangeText={setPassword}
                     />
 
-                    <Button title="Acessar" />
+                    <Button title="Acessar" loading={loading} onPress={handleLogin} />
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
