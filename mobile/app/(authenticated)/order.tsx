@@ -1,3 +1,4 @@
+import { Select } from "@/components/Select";
 import { colors, fontSize, spacing } from "@/constants/theme";
 import api from "@/services/api";
 import { Category } from "@/types";
@@ -7,6 +8,7 @@ import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Pressable,
+    ScrollView,
     StyleSheet,
     Text,
     View,
@@ -22,6 +24,7 @@ export default function Order() {
     }>();
 
     const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
 
     const [loadingCategories, setLoadingCategories] = useState(true);
 
@@ -64,6 +67,19 @@ export default function Order() {
                     </Pressable>
                 </View>
             </View>
+
+            <ScrollView style={styles.scrollContent}>
+                <Select
+                    label="Categorias"
+                    placeholder="Selecione a categoria..."
+                    options={categories.map((category) => ({
+                        label: category.name,
+                        value: category.id,
+                    }))}
+                    selectedValue={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                />
+            </ScrollView>
         </View>
     );
 }
@@ -100,5 +116,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.red,
         padding: spacing.sm,
         borderRadius: 8,
+    },
+    scrollContent: {
+        padding: spacing.lg,
     },
 });
