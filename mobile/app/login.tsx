@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "expo-router";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 
@@ -18,6 +19,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const { signIn } = useAuth();
+    const router = useRouter();
 
     async function handleLogin() {
         if (!email.trim() || !password.trim()) {
@@ -28,6 +30,7 @@ export default function Login() {
         try {
             setLoading(true);
             await signIn(email, password);
+            router.replace("/(authenticated)/dashboard");
         } catch (err) {
             console.log(err);
             Alert.alert("Erro", "Erro ao fazer o login");
