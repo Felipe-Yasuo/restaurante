@@ -30,6 +30,16 @@ export interface Product {
     category?: Category;
 }
 
+export interface Order {
+    id: string;
+    table: number;
+    name?: string | null;
+    draft: boolean;
+    status: boolean;
+    createdAt: string;
+    items?: Item[];
+}
+
 export interface Item {
     id: string;
     amount: number;
