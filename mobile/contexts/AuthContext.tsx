@@ -1,6 +1,6 @@
 import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { LoginResponse, User } from "../types/index";
 
 interface AuthProviderProps {
@@ -12,14 +12,39 @@ interface AuthContextData {
     signed: boolean;
     loading: boolean;
     signIn: (email: string, password: string) => Promise<void>;
+    signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [signed, setSigned] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        async function loadData() {
+            await loadStorageData();
+        }
+
+        loadData();
+    }, []);
+
+    async function loadStorageData() {
+        try {
+            setLoading(true);
+            const storedToken = await AsyncStorage.getItem("@token:pizzaria");
+            const storedUser = await AsyncStorage.getItem("@user:pizzaria");
+
+            if (storedToken && storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     async function signIn(email: string, password: string) {
         try {
@@ -44,13 +69,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
+    async function signOut() {
+        await AsyncStorage.multiRemove(["@token:pizzaria", "@user:pizzaria"]);
+        setUser(null);
+    }
+
     return (
         <AuthContext
             value={{
-                signed,
+                signed: !!user,
                 loading,
                 signIn,
                 user,
+                signOut,
             }}
         >
             {children}
