@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Alert,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -106,6 +107,22 @@ export default function Order() {
         }
     }
 
+    async function handleRemoveItem(item_id: string) {
+        try {
+            await api.delete("/order/remove", {
+                params: { item_id: item_id },
+            });
+
+            const updateditems = items.filter((item) => item.id !== item_id);
+            setItems(updateditems);
+
+            Alert.alert("Item removido", "Seu item foi removido da mesa!");
+        } catch (err) {
+            console.log(err);
+            Alert.alert("Atenção", "Erro ao remover item da mesa.");
+        }
+    }
+
     if (loadingCategories) {
         return (
             <View style={styles.loadingContainer}>
@@ -184,7 +201,11 @@ export default function Order() {
                     <View style={styles.itemsSection}>
                         <Text style={styles.itemsTitle}>Itens adicionados</Text>
                         {items.map((item) => (
-                            <OrderItem item={item} key={item.id} onRemove={async () => { }} />
+                            <OrderItem
+                                item={item}
+                                key={item.id}
+                                onRemove={handleRemoveItem}
+                            />
                         ))}
                     </View>
                 )}

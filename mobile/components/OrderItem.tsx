@@ -6,7 +6,7 @@ import { formatPrice } from "../utils/format";
 
 interface OrderItemProps {
     item: Item;
-    onRemove: () => Promise<void>;
+    onRemove: (item_id: string) => Promise<void>;
 }
 
 export function OrderItem({ item, onRemove }: OrderItemProps) {
@@ -19,7 +19,7 @@ export function OrderItem({ item, onRemove }: OrderItemProps) {
                 </Text>
             </View>
 
-            <Pressable style={styles.deleteButton}>
+            <Pressable style={styles.deleteButton} onPress={() => onRemove(item.id)}>
                 <Feather name="trash" size={20} color={colors.primary} />
             </Pressable>
         </View>
